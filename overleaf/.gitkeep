@@ -1,0 +1,3 @@
+# 此文件夹用于存放 Overleaf 导出的论文 PDF。
+# PDF 文件已通过 .gitignore 排除，不会上传到 GitHub。
+# 请将论文 PDF 放置于此目录后在本地使用。
