@@ -1,23 +1,23 @@
 # posterskill
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that generates print-ready conference posters from your paper. Point it at your Overleaf source and project website — it extracts the content, downloads figures, fetches logos, and builds an interactive poster you can edit in your browser. Single HTML file, no build step.
+一个 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 技能，可从你的论文自动生成可打印的学术会议海报。指向你的 Overleaf 源文件和项目网站，它会提取内容、下载图片、获取 Logo，并生成可在浏览器中编辑的交互式海报。单个 HTML 文件，无需构建步骤。
 
-The key idea: the poster is a **live editor**. Drag dividers to resize columns and rows, click cards to swap or move them, adjust font sizes — then feed your layout back to Claude for further refinement. Iterate between the browser and Claude until it's perfect.
+核心理念：海报是一个**实时编辑器**。拖动分隔线调整列宽和行高，点击卡片进行替换或移动，调整字体大小——然后将你的布局反馈给 Claude 进一步优化。在浏览器和 Claude 之间反复迭代，直到满意为止。
 
-## Quick start
+## 快速开始
 
 ```bash
-git clone git@github.com:ethanweber/posterskill.git poster && cd poster
-git clone https://git.overleaf.com/YOUR_PROJECT_ID overleaf   # your paper
+git clone https://github.com/yoli317/cyy-poster-skill.git poster && cd poster
+git clone https://git.overleaf.com/YOUR_PROJECT_ID overleaf   # 你的论文
 ```
 
-Optionally add reference posters for style matching:
+可选：添加参考海报用于风格匹配：
 
 ```bash
 cp ~/some_poster.pdf references/
 ```
 
-Then start Claude Code and run the skill:
+启动 Claude Code 并运行技能：
 
 ```bash
 claude
@@ -27,74 +27,79 @@ claude
 /make-poster
 ```
 
-It reads your paper, fetches your project website, matches your reference style, and generates a `poster/` directory. Open `poster/index.html` in a browser to preview and edit.
+它会读取你的论文、抓取项目网站、匹配参考风格，并生成 `poster/` 目录。在浏览器中打开 `poster/index.html` 预览和编辑。
 
-## What you get
+## 你将获得什么
 
-The poster is a **self-contained HTML file** with a built-in visual editor:
+海报是一个**自包含的 HTML 文件**，内置可视化编辑器：
 
-- **Drag column dividers** to resize columns
-- **Drag row dividers** to resize cards within columns
-- **Click-to-swap** cards (click one diamond handle, then another)
-- **Move/insert** cards to any position (click a handle, then click a drop zone)
-- **A-/A+** buttons to adjust font size globally
-- **Preview** mode to see exactly how it will print
-- **Save / Copy Config** to export your layout as JSON
+- **拖动列分隔线** 调整列宽
+- **拖动行分隔线** 调整卡片高度
+- **点击交换** 卡片（点击一个菱形手柄，再点击另一个）
+- **移动/插入** 卡片到任意位置（点击手柄，再点击放置区）
+- **A- / A+** 按钮全局调整字体大小
+- **预览** 模式查看打印效果
+- **保存 / 复制配置** 将布局导出为 JSON
 
-No npm, no build step, no server. Just open `index.html` in Chrome.
+无需 npm、无需构建步骤、无需服务器，直接在 Chrome 中打开 `index.html`。
 
-## Inputs
+## 输入项
 
-| Input | Source | Required |
-|-------|--------|----------|
-| Paper | `overleaf/` directory | Yes |
-| Project website | URL (asked at runtime) | Yes |
-| Reference posters | `references/` directory | No |
-| Author website | URL for brand/style matching | No |
-| Formatting specs | Text or conference instructions URL | Asked if missing |
-| Logos | Downloaded from your website to `poster/logos/` | Auto |
-| Git repo | URL to push the poster to | Optional |
+| 输入 | 来源 | 是否必须 |
+|------|------|---------|
+| 论文 | `overleaf/` 目录 | 是 |
+| 项目网站 | URL（运行时询问） | 是 |
+| 参考海报 | `references/` 目录 | 否 |
+| 作者网站 | URL，用于品牌/风格匹配 | 否 |
+| 格式规范 | 文字说明或会议要求 URL | 缺失时询问 |
+| Logo | 从你的网站自动下载到 `poster/logos/` | 自动 |
+| Git 仓库 | 用于推送海报的 URL | 可选 |
 
-## Editing workflow
+## 编辑工作流
 
-1. Claude generates the first draft and opens it in your browser
-2. Drag dividers, swap cards, adjust font size in the browser
-3. Click **Copy Config** in the toolbar
-4. Paste the JSON back to Claude — it updates the defaults
-5. Repeat until you're happy
-6. Click **Preview** to verify, then print to PDF (margins: none, background graphics: on)
+1. Claude 生成初稿并在浏览器中打开
+2. 在浏览器中拖动分隔线、交换卡片、调整字体
+3. 点击工具栏中的 **复制配置**
+4. 将 JSON 粘贴回 Claude——它会更新默认值
+5. 重复以上步骤直到满意
+6. 点击 **预览** 确认效果，然后打印为 PDF（页边距：无，背景图形：开启）
 
-## How it works under the hood
+## 工作原理
 
-The poster uses a React app (loaded via CDN) with:
+海报使用通过 CDN 加载的 React 应用，包含：
 
-- **`CARD_REGISTRY`** — defines each card's content (title, color, JSX body)
-- **`DEFAULT_LAYOUT`** — defines column structure and card ordering
-- **`DEFAULT_LOGOS`** — institutional logos for the header
-- **`window.posterAPI`** — programmatic API for automation
+- **`CARD_REGISTRY`** — 定义每张卡片的内容（标题、颜色、JSX 主体）
+- **`DEFAULT_LAYOUT`** — 定义列结构和卡片排列顺序
+- **`DEFAULT_LOGOS`** — 头部的机构 Logo
+- **`window.posterAPI`** — 用于自动化的编程接口
 
-Claude uses [Playwright](https://playwright.dev/) to:
-- Measure image aspect ratios and assign them to matching columns
-- Auto-optimize column widths to minimize whitespace
-- Take screenshots and visually verify the layout
-- Generate PDFs at full print resolution
+Claude 使用 [Playwright](https://playwright.dev/) 来：
+- 测量图片宽高比并分配到匹配的列
+- 自动优化列宽以减少空白
+- 截图并可视化验证布局
+- 以完整打印分辨率生成 PDF
 
-## Programmatic API
+## 编程接口
 
-Available in the browser console or via Playwright:
+可在浏览器控制台或通过 Playwright 调用：
 
 ```js
-posterAPI.swapCards('method', 'results')      // swap two cards
-posterAPI.moveCard('quant', 'col1', 2)        // move card to position
-posterAPI.setColumnWidth('col1', 280)          // resize column (mm)
-posterAPI.setCardHeight('method', 150)         // set card height (mm)
-posterAPI.setFontScale(1.5)                    // adjust text size
-posterAPI.getWaste()                           // measure whitespace
-posterAPI.getLayout()                          // get current layout
-posterAPI.getConfig()                          // get full config JSON
-posterAPI.resetLayout()                        // restore defaults
+posterAPI.swapCards('method', 'results')      // 交换两张卡片
+posterAPI.moveCard('quant', 'col1', 2)        // 移动卡片到指定位置
+posterAPI.setColumnWidth('col1', 280)          // 调整列宽（mm）
+posterAPI.setCardHeight('method', 150)         // 设置卡片高度（mm）
+posterAPI.setFontScale(1.5)                    // 调整文字大小
+posterAPI.getWaste()                           // 测量空白量
+posterAPI.getLayout()                          // 获取当前布局
+posterAPI.getConfig()                          // 获取完整配置 JSON
+posterAPI.resetLayout()                        // 恢复默认设置
 ```
 
-## Example
+## 示例
 
-See the [Fillerbuster poster](http://ethanweber.me/fillerbuster-poster) ([repo](https://github.com/ethanweber/fillerbuster-poster)) for an example built with this skill.
+参见 [Fillerbuster 海报](http://ethanweber.me/fillerbuster-poster)（[仓库](https://github.com/ethanweber/fillerbuster-poster)），这是使用本技能构建的示例。
+
+## 待改进
+
+- 架构可以自己提出修改
+- 接入 Nature 风格
