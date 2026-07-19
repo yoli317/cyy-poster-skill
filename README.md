@@ -99,7 +99,8 @@ posterAPI.resetLayout()                        // 恢复默认设置
 
 参见 [Fillerbuster 海报](http://ethanweber.me/fillerbuster-poster)（[仓库](https://github.com/ethanweber/fillerbuster-poster)），这是使用本技能构建的示例。
 
-## 待改进
+## 相较原版改动之处
 
-- 架构可以自己提出修改
-- 接入 Nature 风格
+- 增加参考模板，限制字体
+- 允许用户提供poster框架
+- 排版严格按照提取出来的逻辑，图片要插入在相应的位置，能尽量用图片说明的就不用文字，文字用来总结逻辑框架、说明要点
